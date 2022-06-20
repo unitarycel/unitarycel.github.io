@@ -1,4 +1,4 @@
 # unitarycel.github.io
 UnitaryCel
 
-https://unitaryCel.github.io
+https://unitarycel.github.io
