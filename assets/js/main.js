@@ -1,176 +1,241 @@
-
+/**
+* Template Name: Day - v4.10.0
+* Template URL: https://bootstrapmade.com/day-multipurpose-html-template-for-free/
+* Author: BootstrapMade.com
+* License: https://bootstrapmade.com/license/
+*/
 (function() {
-    //===== Prealoder
-    
-    window.onload = function () {
-        window.setTimeout(fadeout, 500);
+  "use strict";
+
+  /**
+   * Easy selector helper function
+   */
+  const select = (el, all = false) => {
+    el = el.trim()
+    if (all) {
+      return [...document.querySelectorAll(el)]
+    } else {
+      return document.querySelector(el)
     }
+  }
 
-    function fadeout() {
-        document.querySelector('.preloader').style.opacity = '0';
-        document.querySelector('.preloader').style.display = 'none';
+  /**
+   * Easy event listener function
+   */
+  const on = (type, el, listener, all = false) => {
+    let selectEl = select(el, all)
+    if (selectEl) {
+      if (all) {
+        selectEl.forEach(e => e.addEventListener(type, listener))
+      } else {
+        selectEl.addEventListener(type, listener)
+      }
     }
-    
-    
-    /*=====================================
-    Sticky
-    ======================================= */
-    window.onscroll = function () {
-        var header_navbar = document.querySelector(".navbar-area");
-        var sticky = header_navbar.offsetTop;
+  }
 
-        if (window.pageYOffset > sticky) {
-            header_navbar.classList.add("sticky");
-        } else {
-            header_navbar.classList.remove("sticky");
-        }
+  /**
+   * Easy on scroll event listener 
+   */
+  const onscroll = (el, listener) => {
+    el.addEventListener('scroll', listener)
+  }
 
-
-
-        // show or hide the back-top-top button
-        var backToTo = document.querySelector(".scroll-top");
-        if (document.body.scrollTop > 50 || document.documentElement.scrollTop > 50) {
-            backToTo.style.display = "flex";
-        } else {
-            backToTo.style.display = "none";
-        }
-    };
-    
-    
-    // for menu scroll 
-    var pageLink = document.querySelectorAll('.page-scroll');
-    
-    pageLink.forEach(elem => {
-        elem.addEventListener('click', e => {
-            e.preventDefault();
-            document.querySelector(elem.getAttribute('href')).scrollIntoView({
-                behavior: 'smooth',
-                offsetTop: 1 - 60,
-            });
-        });
-    });
-    
-    // section menu active
-    function onScroll(event) {
-        var sections = document.querySelectorAll('.page-scroll');
-        var scrollPos = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
-
-        for (var i = 0; i < sections.length; i++) {
-            var currLink = sections[i];
-            var val = currLink.getAttribute('href');
-            var refElement = document.querySelector(val);
-            var scrollTopMinus = scrollPos + 73;
-            if (refElement.offsetTop <= scrollTopMinus && (refElement.offsetTop + refElement.offsetHeight > scrollTopMinus)) {
-                document.querySelector('.page-scroll').classList.remove('active');
-                currLink.classList.add('active');
-            } else {
-                currLink.classList.remove('active');
-            }
-        }
-    };
-
-    window.document.addEventListener('scroll', onScroll);
-
-    //===== close navbar-collapse when a  clicked
-    let navbarToggler = document.querySelector(".navbar-toggler");    
-    var navbarCollapse = document.querySelector(".navbar-collapse");
-
-    document.querySelectorAll(".page-scroll").forEach(e =>
-        e.addEventListener("click", () => {
-            navbarToggler.classList.remove("active");
-            navbarCollapse.classList.remove('show')
-        })
-    );
-    navbarToggler.addEventListener('click', function() {
-        navbarToggler.classList.toggle("active");
-        // navbarCollapse.classList.toggle('show')
-    }) 
-    
-    
-    // WOW active
-    new WOW().init();
-
-    
-    //======== tiny slider for work
-    tns({
-        container: '.work_active',
-        autoplay: true,
-        autoplayTimeout: 5000,
-        autoplayText: [ ' ', ' ' ],
-        mouseDrag: true,
-        gutter: 0,
-        nav: true,
-        controls: false,
-        controlsText: [
-            '<i class="lni lni-chevron-left prev"></i>',
-            '<i class="lni lni-chevron-right next"></i>'
-        ],
-        items: 5,
-
-        responsive: {
-            0: {
-                items: 1,
-            },
-            570: {
-                items: 2,
-            },
-            850: {
-                items: 3,
-            },
-            1200: {
-                items: 4,
-            },
-            1400: {
-                items: 5,
-            },
-        }
-    });
-    //======== tiny slider for team
-    tns({
-        container: '.team_active',
-        autoplay: true,
-        autoplayTimeout: 5000,
-        autoplayText: [ ' ', ' ' ],
-        mouseDrag: true,
-        gutter: 0,
-        nav: true,
-        controls: false,
-        controlsText: [
-            '<i class="lni lni-chevron-left prev"></i>',
-            '<i class="lni lni-chevron-right next"></i>'
-        ],
-        items: 5,
-
-        responsive: {
-            0: {
-                items: 1,
-            },
-            768: {
-                items: 2,
-            },
-            1050: {
-                items: 3,
-            },
-        }
-    });
-
-    // ================ pricing tab
-    const tabs = document.querySelectorAll('[data-tab-target]')
-    const tabContents = document.querySelectorAll('[data-tab-content]')
-    
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        const target = document.querySelector(tab.dataset.tabTarget)
-        tabContents.forEach(tabContent => {
-          tabContent.classList.remove('active')
-        })
-        tabs.forEach(tab => {
-          tab.classList.remove('active')
-        })
-        tab.classList.add('active')
-        target.classList.add('active')
-      })
+  /**
+   * Navbar links active state on scroll
+   */
+  let navbarlinks = select('#navbar .scrollto', true)
+  const navbarlinksActive = () => {
+    let position = window.scrollY + 200
+    navbarlinks.forEach(navbarlink => {
+      if (!navbarlink.hash) return
+      let section = select(navbarlink.hash)
+      if (!section) return
+      if (position >= section.offsetTop && position <= (section.offsetTop + section.offsetHeight)) {
+        navbarlink.classList.add('active')
+      } else {
+        navbarlink.classList.remove('active')
+      }
     })
+  }
+  window.addEventListener('load', navbarlinksActive)
+  onscroll(document, navbarlinksActive)
 
-    
-})();
+  /**
+   * Scrolls to an element with header offset
+   */
+  const scrollto = (el) => {
+    let header = select('#header')
+    let offset = header.offsetHeight
+
+    if (!header.classList.contains('header-scrolled')) {
+      offset -= 16
+    }
+
+    let elementPos = select(el).offsetTop
+    window.scrollTo({
+      top: elementPos - offset,
+      behavior: 'smooth'
+    })
+  }
+
+  /**
+   * Header fixed top on scroll
+   */
+  let selectHeader = select('#header')
+  if (selectHeader) {
+    let headerOffset = selectHeader.offsetTop
+    let nextElement = selectHeader.nextElementSibling
+    const headerFixed = () => {
+      if ((headerOffset - window.scrollY) <= 0) {
+        selectHeader.classList.add('fixed-top')
+        nextElement.classList.add('scrolled-offset')
+      } else {
+        selectHeader.classList.remove('fixed-top')
+        nextElement.classList.remove('scrolled-offset')
+      }
+    }
+    window.addEventListener('load', headerFixed)
+    onscroll(document, headerFixed)
+  }
+
+  /**
+   * Back to top button
+   */
+  let backtotop = select('.back-to-top')
+  if (backtotop) {
+    const toggleBacktotop = () => {
+      if (window.scrollY > 100) {
+        backtotop.classList.add('active')
+      } else {
+        backtotop.classList.remove('active')
+      }
+    }
+    window.addEventListener('load', toggleBacktotop)
+    onscroll(document, toggleBacktotop)
+  }
+
+  /**
+   * Mobile nav toggle
+   */
+  on('click', '.mobile-nav-toggle', function(e) {
+    select('#navbar').classList.toggle('navbar-mobile')
+    this.classList.toggle('bi-list')
+    this.classList.toggle('bi-x')
+  })
+
+  /**
+   * Mobile nav dropdowns activate
+   */
+  on('click', '.navbar .dropdown > a', function(e) {
+    if (select('#navbar').classList.contains('navbar-mobile')) {
+      e.preventDefault()
+      this.nextElementSibling.classList.toggle('dropdown-active')
+    }
+  }, true)
+
+  /**
+   * Scrool with ofset on links with a class name .scrollto
+   */
+  on('click', '.scrollto', function(e) {
+    if (select(this.hash)) {
+      e.preventDefault()
+
+      let navbar = select('#navbar')
+      if (navbar.classList.contains('navbar-mobile')) {
+        navbar.classList.remove('navbar-mobile')
+        let navbarToggle = select('.mobile-nav-toggle')
+        navbarToggle.classList.toggle('bi-list')
+        navbarToggle.classList.toggle('bi-x')
+      }
+      scrollto(this.hash)
+    }
+  }, true)
+
+  /**
+   * Scroll with ofset on page load with hash links in the url
+   */
+  window.addEventListener('load', () => {
+    if (window.location.hash) {
+      if (select(window.location.hash)) {
+        scrollto(window.location.hash)
+      }
+    }
+  });
+
+  /**
+   * Preloader
+   */
+  let preloader = select('#preloader');
+  if (preloader) {
+    window.addEventListener('load', () => {
+      preloader.remove()
+    });
+  }
+
+  /**
+   * Porfolio isotope and filter
+   */
+  window.addEventListener('load', () => {
+    let portfolioContainer = select('.portfolio-container');
+    if (portfolioContainer) {
+      let portfolioIsotope = new Isotope(portfolioContainer, {
+        itemSelector: '.portfolio-item'
+      });
+
+      let portfolioFilters = select('#portfolio-flters li', true);
+
+      on('click', '#portfolio-flters li', function(e) {
+        e.preventDefault();
+        portfolioFilters.forEach(function(el) {
+          el.classList.remove('filter-active');
+        });
+        this.classList.add('filter-active');
+
+        portfolioIsotope.arrange({
+          filter: this.getAttribute('data-filter')
+        });
+        portfolioIsotope.on('arrangeComplete', function() {
+          AOS.refresh()
+        });
+      }, true);
+    }
+
+  });
+
+  /**
+   * Initiate portfolio lightbox 
+   */
+  const portfolioLightbox = GLightbox({
+    selector: '.portfolio-lightbox'
+  });
+
+  /**
+   * Portfolio details slider
+   */
+  new Swiper('.portfolio-details-slider', {
+    speed: 400,
+    loop: true,
+    autoplay: {
+      delay: 5000,
+      disableOnInteraction: false
+    },
+    pagination: {
+      el: '.swiper-pagination',
+      type: 'bullets',
+      clickable: true
+    }
+  });
+
+  /**
+   * Animation on scroll
+   */
+  window.addEventListener('load', () => {
+    AOS.init({
+      duration: 1000,
+      easing: 'ease-in-out',
+      once: true,
+      mirror: false
+    })
+  });
+
+})()
